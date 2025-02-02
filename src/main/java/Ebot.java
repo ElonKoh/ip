@@ -14,19 +14,36 @@ public class Ebot {
         System.out.println(lineDivider + System.lineSeparator() + welcomeMessage);
         System.out.println(lineDivider);
 
-        // Program start
-        String ebotSalutation = "\tEbot says: ";
+        // Program start, initialize scanner for user inputs
+        String ebotSalutation = ("\tEbot added: " + System.lineSeparator());
         String userInput;
         Scanner in = new Scanner(System.in);
         userInput = "";
+
+        // Intialize list
+        int numberOfLists = TaskList.getNumberOfTaskLists();
+        String taskListName = ("list") + String.valueOf(numberOfLists);
+        TaskList taskList = new TaskList(taskListName);
+
         while (!userInput.equalsIgnoreCase("bye")) {
             userInput = in.nextLine();
-            if (!userInput.equalsIgnoreCase("bye")) {
-                System.out.println(ebotSalutation + System.lineSeparator() + bigIndent + userInput);
-                System.out.println(lineDivider);
-            } else {
+            // if not bye
+            if (userInput.equalsIgnoreCase("bye")) {
                 System.out.println(exitMessage);
                 System.out.println(lineDivider);
+            } else if(userInput.equalsIgnoreCase("list")) {
+                if(TaskList.getNumberOfTaskLists() < 1 || taskList.getNumberOfEntries() < 1) {
+                    System.out.println(ebotSalutation + "no lists found");
+                } else {
+                    String[] taskListEntries = taskList.getTaskList();
+                    for (int i = 0; i < taskList.getNumberOfEntries(); i++) {
+                        System.out.println(bigIndent + (i+1) + ". " + taskListEntries[i]);
+                    }
+                }
+            } else {
+                System.out.println(ebotSalutation + bigIndent + userInput);
+                System.out.println(lineDivider);
+                taskList.AddEntry(userInput);
             }
         }
     }
