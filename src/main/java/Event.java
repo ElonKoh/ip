@@ -30,6 +30,7 @@ public class Event extends Task {
         } else {
             taskCheck = " ";
         }
-        return "[" + taskType + "]-[" + taskCheck + "] " + super.getDescription();
+        return "[" + taskType + "]-[" + taskCheck + "] " + super.getDescription() +
+                "(from: " + startBy + " to: " + endBy + ")";
     }
 }
