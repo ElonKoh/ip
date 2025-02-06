@@ -1,6 +1,7 @@
 public class Task {
     private String description;
     private boolean isDone;
+    private static final String taskType = " ";
 
     public Task(String description, boolean isDone) {
         this.description = description;
@@ -17,5 +18,20 @@ public class Task {
 
     public void setIsDone(boolean isDone) {
         this.isDone = isDone;
+    }
+
+    public String getTaskType() {
+        return taskType;
+    }
+
+    @Override
+    public String toString() {
+        String taskCheck;
+        if (isDone) {
+            taskCheck = "X";
+        } else {
+            taskCheck = " ";
+        }
+        return "[" + taskType + "]-[" + taskCheck + "] " + description;
     }
 }

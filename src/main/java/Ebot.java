@@ -14,12 +14,11 @@ public class Ebot {
         System.out.println(lineDivider);
 
         // Program start, initialize scanner for user inputs
-        String ebotSalutation = ("\tEbot added: " + System.lineSeparator());
         String userInput;
         Scanner in = new Scanner(System.in);
         userInput = "";
 
-        // Intialize list
+        // Initialize list
         int numberOfLists = TaskList.getNumberOfTaskLists();
         String taskListName = ("list") + numberOfLists;
         TaskList taskList = new TaskList(taskListName);
@@ -30,39 +29,82 @@ public class Ebot {
             if (userInput.equalsIgnoreCase("bye")) {
                 System.out.println(exitMessage);
                 System.out.println(lineDivider);
+
             // if user types "list" command
             } else if(userInput.equalsIgnoreCase("list")) {
-                // if there are no lists or only empty lists
-                if(TaskList.getNumberOfTaskLists() < 1 || taskList.getNumberOfEntries() < 1) {
-                    System.out.println(ebotSalutation + "no lists found");
-                    System.out.println(lineDivider);
-                // if there is a list to print
-                } else {
-                    printListEntries(taskList);
-                    System.out.println(lineDivider);
-                }
-            // if user types "mark" or "unmark"
+                handleListOutput(taskList);
+
+            // if user types "mark" or "unmark" command
             } else if(userInput.toLowerCase().contains("mark")) {
-                // "unmark" command
                 String unmarkCommand = "unmark";
-                // "mark" command
                 String markCommand = "mark";
+                handleMarkingOutput(userInput, taskList, unmarkCommand, markCommand);
 
-                // if "unmark" command received
-                if(userInput.toLowerCase().contains(unmarkCommand)) {
-                    unmarkTaskAndPrint(userInput, taskList, unmarkCommand);
+            // if user types any of the task types keyword command
+            } else if(userInput.toLowerCase().contains("todo")
+                    || userInput.toLowerCase().contains("event")
+                    || userInput.toLowerCase().contains("deadline")) {
+                handleTaskAdding(taskList, userInput);
 
-                // if "mark" command received
-                } else {
-                    markTaskAndPrint(userInput, taskList, markCommand);
-                }
-            // if user types anything else
+                // if user types anything else
             } else {
-                System.out.println(ebotSalutation + bigIndent + userInput);
+                System.out.println(bigIndent + userInput);
                 System.out.println(lineDivider);
-                Task newTask = new Task(userInput, false);
-                taskList.AddEntry(newTask);
             }
+        }
+    }
+
+    private static void handleTaskAdding(TaskList taskList, String userInput) {
+        String cleanedUserInput = userInput.replace("/", "");
+        String taskType = cleanedUserInput.split(" ")[0];
+        String taskDescription = cleanedUserInput.replace((taskType + " "), "");
+        Task newTask;
+        if (userInput.toLowerCase().contains("todo")) {
+            newTask = new Todo(taskDescription, false);
+            taskList.AddEntry(newTask);
+            System.out.println(smallIndent + "Got it! I added a new to-do: " + System.lineSeparator() + bigIndent + newTask);
+            System.out.println(lineDivider);
+        } else if(userInput.toLowerCase().contains("event")) {
+            String eventTo = userInput.substring(cleanedUserInput.lastIndexOf("from ") + 5,
+                    cleanedUserInput.lastIndexOf("to"));
+            String eventFrom = cleanedUserInput.substring(
+                    cleanedUserInput.toLowerCase().lastIndexOf("to "));
+            String eventDescription = taskDescription.substring(0, taskDescription.lastIndexOf("from"));
+
+            newTask = new Event(eventDescription, false, eventFrom, eventTo);
+            taskList.AddEntry(newTask);
+            System.out.println(smallIndent + "Got it! I added a new event: " + System.lineSeparator() + bigIndent + newTask);
+            System.out.println(lineDivider);
+        } else if(userInput.toLowerCase().contains("deadline")) {
+            String deadlineDescription = taskDescription.substring(0,
+                    taskDescription.lastIndexOf("by"));
+            String deadlineBy = cleanedUserInput.substring(
+                    cleanedUserInput.toLowerCase().lastIndexOf("by "));
+            newTask = new Deadline(deadlineDescription, false, deadlineBy);
+            taskList.AddEntry(newTask);
+            System.out.println(smallIndent + "Got it! I added a new deadline: " + System.lineSeparator() + bigIndent + newTask);
+            System.out.println(lineDivider);
+        }
+    }
+
+    private static void handleMarkingOutput(String userInput, TaskList taskList, String unmarkCommand, String markCommand) {
+        if(userInput.toLowerCase().contains(unmarkCommand)) {
+            unmarkTaskAndPrint(userInput, taskList, unmarkCommand);
+        // if "mark" command received
+        } else {
+            markTaskAndPrint(userInput, taskList, markCommand);
+        }
+    }
+
+    private static void handleListOutput(TaskList taskList) {
+        // if there are no lists or only empty lists
+        if(TaskList.getNumberOfTaskLists() < 1 || taskList.getNumberOfEntries() < 1) {
+            System.out.println(bigIndent + "no lists found");
+            System.out.println(lineDivider);
+        // if there is a list to print
+        } else {
+            System.out.println(bigIndent + taskList);
+            System.out.println(lineDivider);
         }
     }
 
@@ -109,21 +151,6 @@ public class Ebot {
         } catch(NullPointerException E) {
             System.out.println(bigIndent + "Task not found");
             System.out.println(lineDivider);
-        }
-    }
-
-    private static void printListEntries(TaskList taskList) {
-        Task[] taskListEntries = taskList.getTaskList();
-        for (int i = 0; i < taskList.getNumberOfEntries(); i++) {
-            String taskDescription = taskListEntries[i].getDescription();
-            boolean taskIsDone = taskListEntries[i].isDone();
-            String taskCheck;
-            if (taskIsDone) {
-                taskCheck = "X";
-            } else {
-                taskCheck = " ";
-            }
-            System.out.println(bigIndent + (i+1) + ". [" + taskCheck + "] " + taskDescription);
         }
     }
 }
