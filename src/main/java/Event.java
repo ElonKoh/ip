@@ -1,36 +1,31 @@
 public class Event extends Task {
-    protected String startBy;
-    protected String endBy;
-    private static final String taskType = "E";
+    protected String start;
+    protected String end;
+    private static final String TASK_TYPE = "E";
 
-    public Event(String description, boolean isDone, String startBy, String endBy) {
+    public Event(String description, boolean isDone, String start, String end) {
         super(description, isDone);
-        this.startBy = startBy;
-        this.endBy = endBy;
+        this.start = start;
+        this.end = end;
     }
 
-    public String getStartBy() {
-        return startBy;
+    public String getStart() {
+        return start;
     }
 
-    public String getEndBy() {
-        return endBy;
+    public String getEnd() {
+        return end;
     }
 
     @Override
     public String getTaskType() {
-        return taskType;
+        return TASK_TYPE;
     }
 
     @Override
     public String toString() {
-        String taskCheck;
-        if (super.isDone()) {
-            taskCheck = "X";
-        } else {
-            taskCheck = " ";
-        }
-        return "[" + taskType + "]-[" + taskCheck + "] " + super.getDescription() +
-                "(from: " + startBy + " to: " + endBy + ")";
+        String taskCheck = super.isDone() ? "X" : " ";
+        return "[" + TASK_TYPE + "]-[" + taskCheck + "] " + super.getDescription() +
+                "(from " + start + " to " + end + ")";
     }
 }

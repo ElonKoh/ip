@@ -1,17 +1,17 @@
 import java.util.Scanner;
 
 public class Ebot {
-    private static final String lineDivider = ("___________________________________________");
-    private static final String bigIndent = "\t\t";
-    private static final String smallIndent = "\t";
+    private static final String LINE_DIVIDER = ("___________________________________________");
+    private static final String BIG_INDENT = "\t\t";
+    private static final String SMALL_INDENT = "\t";
 
     public static void main(String[] args) {
-        String welcomeMessage = (smallIndent + "Hello! I'm Ebot" +
+        String welcomeMessage = (SMALL_INDENT + "Hello! I'm Ebot" +
                 System.lineSeparator() +
-                smallIndent + "What can i do for you?");
-        String exitMessage = (smallIndent + "Bye. Hope to see you again soon!");
-        System.out.println(lineDivider + System.lineSeparator() + welcomeMessage);
-        System.out.println(lineDivider);
+                SMALL_INDENT + "What can i do for you?");
+        String exitMessage = (SMALL_INDENT + "Bye. Hope to see you again soon!");
+        System.out.println(LINE_DIVIDER + System.lineSeparator() + welcomeMessage);
+        System.out.println(LINE_DIVIDER);
 
         // Program start, initialize scanner for user inputs
         String userInput;
@@ -23,33 +23,33 @@ public class Ebot {
         String taskListName = ("list") + numberOfLists;
         TaskList taskList = new TaskList(taskListName);
 
-        while (!userInput.equalsIgnoreCase("bye")) {
+        while (true) {
             userInput = in.nextLine();
             // if user types "bye" command
             if (userInput.equalsIgnoreCase("bye")) {
                 System.out.println(exitMessage);
-                System.out.println(lineDivider);
-
-            // if user types "list" command
-            } else if(userInput.equalsIgnoreCase("list")) {
+                System.out.println(LINE_DIVIDER);
+                break;
+                // if user types "list" command
+            } else if (userInput.equalsIgnoreCase("list")) {
                 handleListOutput(taskList);
 
-            // if user types "mark" or "unmark" command
-            } else if(userInput.toLowerCase().contains("mark")) {
+                // if user types "mark" or "unmark" command
+            } else if (userInput.toLowerCase().contains("mark")) {
                 String unmarkCommand = "unmark";
                 String markCommand = "mark";
                 handleMarkingOutput(userInput, taskList, unmarkCommand, markCommand);
 
-            // if user types any of the task types keyword command
-            } else if(userInput.toLowerCase().contains("todo")
+                // if user types any of the task types keyword command
+            } else if (userInput.toLowerCase().contains("todo")
                     || userInput.toLowerCase().contains("event")
                     || userInput.toLowerCase().contains("deadline")) {
                 handleTaskAdding(taskList, userInput);
 
                 // if user types anything else
             } else {
-                System.out.println(bigIndent + userInput);
-                System.out.println(lineDivider);
+                System.out.println(BIG_INDENT + userInput);
+                System.out.println(LINE_DIVIDER);
             }
         }
     }
@@ -61,36 +61,36 @@ public class Ebot {
         Task newTask;
         if (userInput.toLowerCase().contains("todo")) {
             newTask = new Todo(taskDescription, false);
-            taskList.AddEntry(newTask);
-            System.out.println(smallIndent + "Got it! I added a new to-do: " + System.lineSeparator() + bigIndent + newTask);
-            System.out.println(lineDivider);
-        } else if(userInput.toLowerCase().contains("event")) {
-            String eventTo = userInput.substring(cleanedUserInput.lastIndexOf("from ") + 5,
+            taskList.addEntry(newTask);
+            System.out.println(SMALL_INDENT + "Got it! I added a new to-do: " + System.lineSeparator() + BIG_INDENT + newTask);
+            System.out.println(LINE_DIVIDER);
+        } else if (userInput.toLowerCase().contains("event")) {
+            String eventFrom = userInput.substring(cleanedUserInput.lastIndexOf("from ") + 5,
                     cleanedUserInput.lastIndexOf("to"));
-            String eventFrom = cleanedUserInput.substring(
-                    cleanedUserInput.toLowerCase().lastIndexOf("to "));
+            String eventTo = cleanedUserInput.substring(
+                    cleanedUserInput.toLowerCase().lastIndexOf(" to ") + 3);
             String eventDescription = taskDescription.substring(0, taskDescription.lastIndexOf("from"));
 
             newTask = new Event(eventDescription, false, eventFrom, eventTo);
-            taskList.AddEntry(newTask);
-            System.out.println(smallIndent + "Got it! I added a new event: " + System.lineSeparator() + bigIndent + newTask);
-            System.out.println(lineDivider);
-        } else if(userInput.toLowerCase().contains("deadline")) {
+            taskList.addEntry(newTask);
+            System.out.println(SMALL_INDENT + "Got it! I added a new event: " + System.lineSeparator() + BIG_INDENT + newTask);
+            System.out.println(LINE_DIVIDER);
+        } else if (userInput.toLowerCase().contains("deadline")) {
             String deadlineDescription = taskDescription.substring(0,
-                    taskDescription.lastIndexOf("by"));
+                    taskDescription.lastIndexOf("by "));
             String deadlineBy = cleanedUserInput.substring(
-                    cleanedUserInput.toLowerCase().lastIndexOf("by "));
+                    cleanedUserInput.toLowerCase().lastIndexOf("by ") + 3);
             newTask = new Deadline(deadlineDescription, false, deadlineBy);
-            taskList.AddEntry(newTask);
-            System.out.println(smallIndent + "Got it! I added a new deadline: " + System.lineSeparator() + bigIndent + newTask);
-            System.out.println(lineDivider);
+            taskList.addEntry(newTask);
+            System.out.println(SMALL_INDENT + "Got it! I added a new deadline: " + System.lineSeparator() + BIG_INDENT + newTask);
+            System.out.println(LINE_DIVIDER);
         }
     }
 
     private static void handleMarkingOutput(String userInput, TaskList taskList, String unmarkCommand, String markCommand) {
-        if(userInput.toLowerCase().contains(unmarkCommand)) {
+        if (userInput.toLowerCase().contains(unmarkCommand)) {
             unmarkTaskAndPrint(userInput, taskList, unmarkCommand);
-        // if "mark" command received
+            // if "mark" command received
         } else {
             markTaskAndPrint(userInput, taskList, markCommand);
         }
@@ -98,13 +98,13 @@ public class Ebot {
 
     private static void handleListOutput(TaskList taskList) {
         // if there are no lists or only empty lists
-        if(TaskList.getNumberOfTaskLists() < 1 || taskList.getNumberOfEntries() < 1) {
-            System.out.println(bigIndent + "no lists found");
-            System.out.println(lineDivider);
-        // if there is a list to print
+        if (TaskList.getNumberOfTaskLists() < 1 || taskList.getNumberOfEntries() < 1) {
+            System.out.println(BIG_INDENT + "no lists found");
+            System.out.println(LINE_DIVIDER);
+            // if there is a list to print
         } else {
-            System.out.println(bigIndent + taskList);
-            System.out.println(lineDivider);
+            System.out.println(taskList);
+            System.out.println(LINE_DIVIDER);
         }
     }
 
@@ -116,18 +116,18 @@ public class Ebot {
         try {
             Task taskToMark = taskList.getTask(taskNum - 1);
             if (taskToMark.isDone()) {
-                System.out.println(bigIndent + "Task " + taskNum + " is already marked as completed");
-                System.out.println(bigIndent + "[X] " + taskToMark.getDescription());
-                System.out.println(lineDivider);
+                System.out.println(BIG_INDENT + "Task " + taskNum + " is already marked as completed");
+                System.out.println(BIG_INDENT + taskToMark);
+                System.out.println(LINE_DIVIDER);
             } else {
                 taskToMark.setIsDone(true);
-                System.out.println(bigIndent + "Good Job! I marked task " + taskNum + " as completed");
-                System.out.println(bigIndent + "[X] " + taskToMark.getDescription());
-                System.out.println(lineDivider);
+                System.out.println(BIG_INDENT + "Good Job! I marked task " + taskNum + " as completed");
+                System.out.println(BIG_INDENT + taskToMark);
+                System.out.println(LINE_DIVIDER);
             }
-        } catch(NullPointerException E) {
-            System.out.println(bigIndent + "Task not found");
-            System.out.println(lineDivider);
+        } catch (NullPointerException E) {
+            System.out.println(BIG_INDENT + "Task not found");
+            System.out.println(LINE_DIVIDER);
         }
     }
 
@@ -139,18 +139,18 @@ public class Ebot {
         try {
             Task taskToUnmark = taskList.getTask(taskNum - 1);
             if (!taskToUnmark.isDone()) {
-                System.out.println(bigIndent + "Task " + taskNum + " is already marked as not done");
-                System.out.println(bigIndent + "[ ] " + taskToUnmark.getDescription());
-                System.out.println(lineDivider);
+                System.out.println(BIG_INDENT + "Task " + taskNum + " is already marked as not done");
+                System.out.println(BIG_INDENT + taskToUnmark);
+                System.out.println(LINE_DIVIDER);
             } else {
                 taskToUnmark.setIsDone(false);
-                System.out.println(bigIndent + "Got it! I marked task " + taskNum + " as not done");
-                System.out.println(bigIndent + "[ ] " + taskToUnmark.getDescription());
-                System.out.println(lineDivider);
+                System.out.println(BIG_INDENT + "Got it! I marked task " + taskNum + " as not done");
+                System.out.println(BIG_INDENT + taskToUnmark);
+                System.out.println(LINE_DIVIDER);
             }
-        } catch(NullPointerException E) {
-            System.out.println(bigIndent + "Task not found");
-            System.out.println(lineDivider);
+        } catch (NullPointerException E) {
+            System.out.println(BIG_INDENT + "Task not found");
+            System.out.println(LINE_DIVIDER);
         }
     }
 }

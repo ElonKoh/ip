@@ -1,19 +1,19 @@
 public class Deadline extends Task {
-    protected String doBy;
-    private static final String taskType = "D";
+    protected String by;
+    private static final String TASK_TYPE = "D";
 
-    public Deadline(String description, boolean isDone, String doBy) {
+    public Deadline(String description, boolean isDone, String by) {
         super(description, isDone);
-        this.doBy = doBy;
+        this.by = by;
     }
 
-    public String getDoBy() {
-        return doBy;
+    public String getBy() {
+        return by;
     }
 
     @Override
     public String getTaskType() {
-        return taskType;
+        return TASK_TYPE;
     }
 
     @Override
@@ -24,7 +24,7 @@ public class Deadline extends Task {
         } else {
             taskCheck = " ";
         }
-        return "[" + taskType + "]-[" + taskCheck + "] " + super.getDescription() + "(by: " + doBy + ")";
+        return "[" + TASK_TYPE + "]-[" + taskCheck + "] " + super.getDescription() + "(by: " + by + ")";
     }
 
 }

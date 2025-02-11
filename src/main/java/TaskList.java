@@ -30,7 +30,7 @@ public class TaskList {
         numberOfTaskLists += 1;
     }
 
-    public void AddEntry(Task entry) {
+    public void addEntry(Task entry) {
         this.entries[numberOfEntries] = entry;
         numberOfEntries += 1;
     }
@@ -55,7 +55,7 @@ public class TaskList {
     public String toString() {
         String printList = "";
         for (int i = 0; i < numberOfEntries; i++) {
-            String printEntry = (i+1) + ". " + entries[i] + System.lineSeparator();
+            String printEntry = "\t\t" + (i + 1) + ". " + entries[i] + System.lineSeparator();
             printList += printEntry;
         }
         return printList;
