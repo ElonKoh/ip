@@ -55,7 +55,12 @@ public class TaskList {
     public String toString() {
         String printList = "";
         for (int i = 0; i < numberOfEntries; i++) {
-            String printEntry = "\t\t" + (i + 1) + ". " + entries[i] + System.lineSeparator();
+            String printEntry;
+            if (i == numberOfEntries) {
+                printEntry = "\t\t" + (i + 1) + ". " + entries[i];
+            } else {
+                printEntry = "\t\t" + (i + 1) + ". " + entries[i] + System.lineSeparator();
+            }
             printList += printEntry;
         }
         return printList;

@@ -26,6 +26,6 @@ public class Event extends Task {
     public String toString() {
         String taskCheck = super.isDone() ? "X" : " ";
         return "[" + TASK_TYPE + "]-[" + taskCheck + "] " + super.getDescription() +
-                "(from " + start + " to " + end + ")";
+                " (from " + start + " to " + end + ")";
     }
 }
