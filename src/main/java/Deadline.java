@@ -24,7 +24,7 @@ public class Deadline extends Task {
         } else {
             taskCheck = " ";
         }
-        return "[" + TASK_TYPE + "]-[" + taskCheck + "] " + super.getDescription() + "(by: " + by + ")";
+        return "[" + TASK_TYPE + "]-[" + taskCheck + "] " + super.getDescription() + " (by: " + by + ")";
     }
 
 }
