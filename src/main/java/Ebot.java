@@ -72,43 +72,53 @@ public class Ebot {
                 System.out.println(LINE_DIVIDER);
             }
         } else if (userInput.toLowerCase().contains("event")) {
-            taskDescription = cleanedUserInput.substring(cleanedUserInput.indexOf("event") + 5, cleanedUserInput.indexOf("from"));
             try {
-                if (taskDescription.length() == 0) {
-                    throw new MissingDescriptionException();
-                }
                 if (!cleanedUserInput.contains("to") || !cleanedUserInput.contains("from")) {
                     throw new MissingKeywordException();
+                }
+
+                taskDescription = cleanedUserInput.substring(cleanedUserInput.indexOf("event") + 5, cleanedUserInput.indexOf("from"));
+
+                if (taskDescription.length() == 0) {
+                    throw new MissingDescriptionException();
                 }
                 String eventFrom = cleanedUserInput.substring(cleanedUserInput.lastIndexOf("from") + 4,
                         cleanedUserInput.lastIndexOf("to"));
                 String eventTo = cleanedUserInput.substring(
                         cleanedUserInput.lastIndexOf("to") + 2);
+                if (eventFrom.length() == 0 || eventTo.length() == 0) {
+                    throw new MissingInformationException();
+                }
                 newTask = new Event(taskDescription, false, eventFrom, eventTo);
                 taskList.addEntry(newTask);
                 System.out.println(SMALL_INDENT + "Got it! I added a new event: " + System.lineSeparator() + BIG_INDENT + newTask);
-            } catch (MissingKeywordException E) {
+            } catch (MissingKeywordException | MissingInformationException e) {
                 System.out.println(SMALL_INDENT + "Error! Did you forget to write From when To when?");
             } catch (MissingDescriptionException e) {
-                System.out.println(SMALL_INDENT + "No description provided!");
+                System.out.println(SMALL_INDENT + "Error! Did you forget to write a description?");
             } finally {
                 System.out.println(LINE_DIVIDER);
             }
         } else if (userInput.toLowerCase().contains("deadline")) {
-            taskDescription = cleanedUserInput.substring(cleanedUserInput.indexOf("deadline") + 8, cleanedUserInput.indexOf("by"));
             try {
-                if (taskDescription.length() == 0) {
-                    throw new MissingDescriptionException();
-                }
                 if (!cleanedUserInput.contains("by")) {
                     throw new MissingKeywordException();
                 }
+
+                taskDescription = cleanedUserInput.substring(cleanedUserInput.indexOf("deadline") + 8, cleanedUserInput.indexOf("by"));
+
+                if (taskDescription.length() == 0) {
+                    throw new MissingDescriptionException();
+                }
                 String deadlineBy = cleanedUserInput.substring(
                         cleanedUserInput.toLowerCase().lastIndexOf("by") + 2);
+                if (deadlineBy.length() == 0) {
+                    throw new MissingInformationException();
+                }
                 newTask = new Deadline(taskDescription, false, deadlineBy);
                 taskList.addEntry(newTask);
                 System.out.println(SMALL_INDENT + "Got it! I added a new deadline: " + System.lineSeparator() + BIG_INDENT + newTask);
-            } catch (MissingKeywordException E) {
+            } catch (MissingKeywordException | MissingInformationException e) {
                 System.out.println(SMALL_INDENT + "Error! Did you forget to write by when?");
             } catch (MissingDescriptionException e) {
                 System.out.println(SMALL_INDENT + "No description provided!");
