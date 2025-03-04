@@ -1,17 +1,19 @@
 import java.util.Scanner;
+import java.io.File;
+import java.io.IOException;
+import java.io.FileWriter;
 
 public class Ebot {
+    public static final String OUTPUT_FILE_NAME = "./data/ebot.txt";
     private static final String LINE_DIVIDER = ("___________________________________________");
     private static final String BIG_INDENT = "\t\t";
     private static final String SMALL_INDENT = "\t";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         String welcomeMessage = (SMALL_INDENT + "Hello! I'm Ebot" +
                 System.lineSeparator() +
                 SMALL_INDENT + "What can i do for you?");
         String exitMessage = (SMALL_INDENT + "Bye. Hope to see you again soon!");
-        System.out.println(LINE_DIVIDER + System.lineSeparator() + welcomeMessage);
-        System.out.println(LINE_DIVIDER);
 
         // Program start, initialize scanner for user inputs
         String userInput;
@@ -23,6 +25,14 @@ public class Ebot {
         String taskListName = ("list") + numberOfLists;
         TaskList taskList = new TaskList(taskListName);
 
+        // Initialize file
+        createFile(OUTPUT_FILE_NAME);
+
+        // Print Welcome Message
+        System.out.println(LINE_DIVIDER + System.lineSeparator() + welcomeMessage);
+        System.out.println(LINE_DIVIDER);
+
+        // User chat loop
         while (true) {
             userInput = in.nextLine();
             // if user types "bye" command
@@ -31,27 +41,34 @@ public class Ebot {
                 System.out.println(LINE_DIVIDER);
                 break;
 
-                // if user types "list" command
+            // if user types "list" command
             } else if (userInput.toLowerCase().contains("list")) {
                 handleListOutput(taskList);
 
-                // if user types "mark" or "unmark" command
+            // if user types "list" command
+            } else if (userInput.toLowerCase().contains("list")) {
+                handleListOutput(taskList);
+
+            // if user types "mark" or "unmark" command
             } else if (userInput.toLowerCase().contains("mark")) {
                 String unmarkCommand = "unmark";
                 String markCommand = "mark";
                 handleMarkingOutput(userInput, taskList, unmarkCommand, markCommand);
+                writeToFile(OUTPUT_FILE_NAME, taskList.toString());
 
-                // if user types any of the task types keyword command
+            // if user types any of the task types keyword command
             } else if (userInput.toLowerCase().contains("todo")
                     || userInput.toLowerCase().contains("event")
                     || userInput.toLowerCase().contains("deadline")) {
                 handleTaskAdding(taskList, userInput);
+                writeToFile(OUTPUT_FILE_NAME, taskList.toString());
 
-                // if user types "delete" command
+            // if user types "delete" command
             } else if (userInput.toLowerCase().contains("delete")) {
                 handleTaskDeletion(taskList, userInput);
+                writeToFile(OUTPUT_FILE_NAME, taskList.toString());
 
-                // if user types anything else
+            // if user types anything else
             } else {
                 System.out.println(BIG_INDENT + userInput);
                 System.out.println(LINE_DIVIDER);
@@ -71,6 +88,30 @@ public class Ebot {
             System.out.println(SMALL_INDENT + "Task not found");
         } finally {
             System.out.println(LINE_DIVIDER);
+        }
+    }
+
+    private static void writeToFile(String filePath, String textToAdd) throws IOException {
+        try {
+            FileWriter fw = new FileWriter(filePath);
+            fw.write(textToAdd);
+            fw.close();
+        } catch (IOException E) {
+            System.out.println("Unable to write to output file: " + E.getMessage());
+        }
+    }
+
+    private static void createFile(String filename) {
+        try {
+            File ebotOutput = new File(filename);
+            ebotOutput.getParentFile().mkdirs();
+            if (ebotOutput.createNewFile()) {
+                System.out.println("Output file created: " + ebotOutput.getName());
+            } else {
+                System.out.println("Output file already exists.");
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred");
         }
     }
 
