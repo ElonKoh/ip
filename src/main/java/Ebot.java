@@ -30,9 +30,11 @@ public class Ebot {
                 System.out.println(exitMessage);
                 System.out.println(LINE_DIVIDER);
                 break;
+
                 // if user types "list" command
             } else if (userInput.toLowerCase().contains("list")) {
                 handleListOutput(taskList);
+
                 // if user types "mark" or "unmark" command
             } else if (userInput.toLowerCase().contains("mark")) {
                 String unmarkCommand = "unmark";
@@ -45,11 +47,30 @@ public class Ebot {
                     || userInput.toLowerCase().contains("deadline")) {
                 handleTaskAdding(taskList, userInput);
 
+                // if user types "delete" command
+            } else if (userInput.toLowerCase().contains("delete")) {
+                handleTaskDeletion(taskList, userInput);
+
                 // if user types anything else
             } else {
                 System.out.println(BIG_INDENT + userInput);
                 System.out.println(LINE_DIVIDER);
             }
+        }
+    }
+
+    private static void handleTaskDeletion(TaskList taskList, String userInput) {
+        try {
+            Integer deleteIndex = Integer.valueOf(userInput.toLowerCase().replace("delete", "").replace(" ", "")) - 1;
+            taskList.deleteEntry(deleteIndex);
+            System.out.println(SMALL_INDENT + "Got it! I deleted task " + (deleteIndex + 1));
+            System.out.println(taskList);
+        } catch (NumberFormatException E) {
+            System.out.println(SMALL_INDENT + "Error! Did you forget to indicate which index to delete?");
+        } catch (IndexOutOfBoundsException E) {
+            System.out.println(SMALL_INDENT + "Task not found");
+        } finally {
+            System.out.println(LINE_DIVIDER);
         }
     }
 
@@ -140,7 +161,7 @@ public class Ebot {
     private static void handleListOutput(TaskList taskList) {
         // if there are no lists or only empty lists
         if (TaskList.getNumberOfTaskLists() < 1 || taskList.getNumberOfEntries() < 1) {
-            System.out.println(BIG_INDENT + "no lists found");
+            System.out.println(SMALL_INDENT + "no lists found");
             System.out.println(LINE_DIVIDER);
             // if there is a list to print
         } else {
@@ -157,17 +178,17 @@ public class Ebot {
         try {
             Task taskToMark = taskList.getTask(taskNum - 1);
             if (taskToMark.isDone()) {
-                System.out.println(BIG_INDENT + "Task " + taskNum + " is already marked as completed");
+                System.out.println(SMALL_INDENT + "Task " + taskNum + " is already marked as completed");
                 System.out.println(BIG_INDENT + taskToMark);
                 System.out.println(LINE_DIVIDER);
             } else {
                 taskToMark.setIsDone(true);
-                System.out.println(BIG_INDENT + "Good Job! I marked task " + taskNum + " as completed");
+                System.out.println(SMALL_INDENT + "Good Job! I marked task " + taskNum + " as completed");
                 System.out.println(BIG_INDENT + taskToMark);
                 System.out.println(LINE_DIVIDER);
             }
         } catch (NullPointerException E) {
-            System.out.println(BIG_INDENT + "Task not found");
+            System.out.println(SMALL_INDENT + "Task not found");
             System.out.println(LINE_DIVIDER);
         }
     }
@@ -184,16 +205,16 @@ public class Ebot {
                     throw new TaskMarkingException();
                 }
                 taskToUnmark.setIsDone(false);
-                System.out.println(BIG_INDENT + "Got it! I marked task " + taskNum + " as not done");
+                System.out.println(SMALL_INDENT + "Got it! I marked task " + taskNum + " as not done");
                 System.out.println(BIG_INDENT + taskToUnmark);
                 System.out.println(LINE_DIVIDER);
             } catch (TaskMarkingException E) {
-                System.out.println(BIG_INDENT + "Task " + taskNum + " is already marked as not done");
+                System.out.println(SMALL_INDENT + "Task " + taskNum + " is already marked as not done");
                 System.out.println(BIG_INDENT + taskToUnmark);
                 System.out.println(LINE_DIVIDER);
             }
         } catch (NullPointerException E) {
-            System.out.println(BIG_INDENT + "Task not found");
+            System.out.println(SMALL_INDENT + "Task not found");
             System.out.println(LINE_DIVIDER);
         }
     }
