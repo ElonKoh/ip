@@ -1,50 +1,50 @@
-import java.util.Arrays;
+import java.util.ArrayList;
 
 public class TaskList {
     private String listName;
-    private Task[] entries = new Task[100];
-    private int numberOfEntries;
+    private ArrayList<Task> entries;
     private static int numberOfTaskLists = 0;
 
     // Constructing empty list
     public TaskList(String listName) {
         this.listName = listName;
-        this.entries = new Task[100];
-        this.numberOfEntries = 0;
+        this.entries = new ArrayList<>();
         numberOfTaskLists += 1;
     }
 
     // Constructing list with a single entry
     public TaskList(String listName, Task entry) {
         this.listName = listName;
-        this.entries[0] = entry;
-        this.numberOfEntries = 1;
+        this.entries = new ArrayList<>();
+        entries.add(entry);
         numberOfTaskLists += 1;
     }
 
     // Constructing list with existing list
-    public TaskList(String listName, Task[] entries) {
+    public TaskList(String listName, ArrayList<Task> entries) {
         this.listName = listName;
         this.entries = entries;
-        this.numberOfEntries = entries.length;
         numberOfTaskLists += 1;
     }
 
     public void addEntry(Task entry) {
-        this.entries[numberOfEntries] = entry;
-        numberOfEntries += 1;
+        entries.add(entry);
     }
 
-    public Task[] getTaskList() {
-        return Arrays.copyOf(entries, numberOfEntries);
+    public void deleteEntry(int deleteIndex) {
+        entries.remove(deleteIndex);
+    }
+
+    public ArrayList<Task> getTaskList() {
+        return entries;
     }
 
     public Task getTask(int index) {
-        return entries[index];
+        return entries.get(index);
     }
 
     public int getNumberOfEntries() {
-        return numberOfEntries;
+        return entries.size();
     }
 
     public static int getNumberOfTaskLists() {
@@ -54,12 +54,12 @@ public class TaskList {
     @Override
     public String toString() {
         String printList = "";
-        for (int i = 0; i < numberOfEntries; i++) {
+        for (int i = 0; i < entries.size(); i++) {
             String printEntry;
-            if (i == numberOfEntries) {
-                printEntry = "\t\t" + (i + 1) + ". " + entries[i];
+            if (i == (entries.size() - 1)) {
+                printEntry = "\t\t" + (i + 1) + ". " + entries.get(i);
             } else {
-                printEntry = "\t\t" + (i + 1) + ". " + entries[i] + System.lineSeparator();
+                printEntry = "\t\t" + (i + 1) + ". " + entries.get(i) + System.lineSeparator();
             }
             printList += printEntry;
         }
