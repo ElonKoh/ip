@@ -1,234 +1,158 @@
-import java.util.Scanner;
-import java.io.File;
 import java.io.IOException;
-import java.io.FileWriter;
 
 public class Ebot {
-    public static final String OUTPUT_FILE_NAME = "./data/ebot.txt";
-    private static final String LINE_DIVIDER = ("___________________________________________");
-    private static final String BIG_INDENT = "\t\t";
-    private static final String SMALL_INDENT = "\t";
+    private static final String OUTPUT_FILE_NAME = "./data/ebot.txt";
+    private Ui ui;
+    private Storage storage;
+    private TaskList tasks;
 
-    public static void main(String[] args) {
-        String welcomeMessage = (SMALL_INDENT + "Hello! I'm Ebot" +
-                System.lineSeparator() +
-                SMALL_INDENT + "What can i do for you?");
-        String exitMessage = (SMALL_INDENT + "Bye. Hope to see you again soon!");
-
-        // Program start, initialize scanner for user inputs
-        String userInput;
-        Scanner in = new Scanner(System.in);
-
-        // Initialize list
+    public Ebot(String filepath) throws IOException {
+        ui = new Ui();
         int numberOfLists = TaskList.getNumberOfTaskLists();
-        String taskListName = ("list") + numberOfLists;
-        TaskList taskList = new TaskList(taskListName);
+        String taskListName = ("list ") + numberOfLists;
+        tasks = new TaskList(taskListName);
+        storage = new Storage(filepath);
+    }
 
-        // Initialize file
-        createFile();
+    public void createFile() {
+        storage.createFile();
+    }
 
-        // Print Welcome Message
-        System.out.println(LINE_DIVIDER + System.lineSeparator() + welcomeMessage);
-        System.out.println(LINE_DIVIDER);
-
+    public void run() throws IOException {
+        ui.printWelcome();
         // User chat loop
         while (true) {
-            userInput = in.nextLine();
+            String userInput = Parser.getUserInput();
             // if user types "bye" command
             if (userInput.equalsIgnoreCase("bye")) {
-                System.out.println(exitMessage);
-                System.out.println(LINE_DIVIDER);
+                ui.printExit();
+                storage.closeFileWriter();
                 break;
 
-            // if user types "list" command
+                // if user types "list" command
             } else if (userInput.toLowerCase().contains("list")) {
-                handleListOutput(taskList);
+                ui.handleListOutput(tasks);
 
-            // if user types "mark" or "unmark" command
+                // if user types "mark" or "unmark" command
             } else if (userInput.toLowerCase().contains("mark")) {
                 String unmarkCommand = "unmark";
                 String markCommand = "mark";
-                handleMarkingOutput(userInput, taskList, unmarkCommand, markCommand);
-                writeToFile(taskList.toString());
+                handleMarkingOutput(userInput, tasks, unmarkCommand, markCommand, ui);
+                storage.writeToFile(tasks.toString());
 
-            // if user types any of the task types keyword command
+                // if user types any of the task types keyword command
             } else if (userInput.toLowerCase().contains("todo")
                     || userInput.toLowerCase().contains("event")
                     || userInput.toLowerCase().contains("deadline")) {
-                handleTaskAdding(taskList, userInput);
-                writeToFile(taskList.toString());
+                handleTaskAdding(tasks, userInput, ui);
+                storage.writeToFile(tasks.toString());
 
-            // if user types "delete" command
+                // if user types "delete" command
             } else if (userInput.toLowerCase().contains("delete")) {
-                handleTaskDeletion(taskList, userInput);
-                writeToFile(taskList.toString());
+                handleTaskDeletion(tasks, userInput, ui);
+                storage.writeToFile(tasks.toString());
 
-            // if user types anything else
+                // if user types anything else
             } else {
-                System.out.println(SMALL_INDENT + userInput);
-                System.out.println(LINE_DIVIDER);
+                ui.echoUserInput(userInput);
             }
         }
     }
 
-    private static void handleTaskDeletion(TaskList taskList, String userInput) {
+    public static void main(String[] args) throws IOException {
+        Ebot ebot = new Ebot(OUTPUT_FILE_NAME);
+        ebot.createFile();
+        ebot.run();
+    }
+
+    private static void handleTaskDeletion(TaskList taskList, String userInput, Ui ui) {
         try {
             int deleteIndex = ((Integer.parseInt(userInput.toLowerCase().replace("delete", "").replace(" ", "")))-1);
             taskList.deleteEntry(deleteIndex);
-            System.out.println(SMALL_INDENT + "Got it! I deleted task " + (deleteIndex + 1));
-            System.out.println(taskList);
+            ui.printDeleteTask(deleteIndex, taskList);
         } catch (NumberFormatException E) {
-            System.out.println(SMALL_INDENT + "Error! Did you forget to indicate which index to delete?");
+            ui.printNumberFormatException();
         } catch (IndexOutOfBoundsException E) {
-            System.out.println(SMALL_INDENT + "Task not found");
+            ui.printIndexOutOfBoundsException();
         } finally {
-            System.out.println(LINE_DIVIDER);
+            ui.printSeparator();
         }
     }
 
-    private static void writeToFile(String textToAdd) {
-        try {
-            FileWriter fw = new FileWriter(OUTPUT_FILE_NAME);
-            fw.write(textToAdd);
-            fw.close();
-        } catch (IOException E) {
-            System.out.println("Unable to write to output file: " + E.getMessage());
-        }
-    }
-
-    private static void createFile() {
-        try {
-            File ebotOutput = new File(OUTPUT_FILE_NAME);
-            if ((ebotOutput.createNewFile()) && (ebotOutput.getParentFile().mkdirs())) {
-                System.out.println("Output file created: " + ebotOutput.getName());
-            } else {
-                System.out.println("Output file already exists.");
-            }
-        } catch (IOException e) {
-            System.out.println("An error occurred");
-        }
-    }
-
-    private static void handleTaskAdding(TaskList taskList, String userInput) {
-        String cleanedUserInput = userInput.toLowerCase().replace(" ", "").replace("/", "");
-        String taskDescription;
+    private static void handleTaskAdding(TaskList taskList, String userInput, Ui ui) {
+        String inputTaskType = Parser.parseInputTaskType(userInput);
+        String inputTaskDescription = Parser.parseInputTaskDesc(userInput);
         Task newTask;
-        if (userInput.toLowerCase().contains("todo")) {
-            taskDescription = cleanedUserInput.replace(("todo"), "");
-            try {
-                if (taskDescription.length() == 0) {
-                    throw new MissingDescriptionException();
-                }
-                newTask = new Todo(taskDescription, false);
-                taskList.addEntry(newTask);
-                System.out.println(SMALL_INDENT + "Got it! I added a new to-do: " + System.lineSeparator() + BIG_INDENT + newTask);
-            } catch (MissingDescriptionException E) {
-                System.out.println(SMALL_INDENT + "No description provided!");
-            } finally {
-                System.out.println(LINE_DIVIDER);
+
+        try {
+            if (inputTaskDescription.length() == 0) {
+                throw new MissingDescriptionException();
             }
-        } else if (userInput.toLowerCase().contains("event")) {
-            try {
-                if (!cleanedUserInput.contains("to") || !cleanedUserInput.contains("from")) {
-                    throw new MissingKeywordException();
-                }
-
-                taskDescription = cleanedUserInput.substring(cleanedUserInput.indexOf("event") + 5, cleanedUserInput.indexOf("from"));
-
-                if (taskDescription.length() == 0) {
-                    throw new MissingDescriptionException();
-                }
-                String eventFrom = cleanedUserInput.substring(cleanedUserInput.lastIndexOf("from") + 4,
-                        cleanedUserInput.lastIndexOf("to"));
-                String eventTo = cleanedUserInput.substring(
-                        cleanedUserInput.lastIndexOf("to") + 2);
-                if (eventFrom.length() == 0 || eventTo.length() == 0) {
-                    throw new MissingInformationException();
-                }
-                newTask = new Event(taskDescription, false, eventFrom, eventTo);
-                taskList.addEntry(newTask);
-                System.out.println(SMALL_INDENT + "Got it! I added a new event: " + System.lineSeparator() + BIG_INDENT + newTask);
-            } catch (MissingKeywordException | MissingInformationException e) {
-                System.out.println(SMALL_INDENT + "Error! Did you forget to write From when To when?");
-            } catch (MissingDescriptionException e) {
-                System.out.println(SMALL_INDENT + "Error! Did you forget to write a description?");
-            } finally {
-                System.out.println(LINE_DIVIDER);
+            if (Parser.isMissingKeyword(userInput)) {
+                throw new MissingKeywordException();
             }
-        } else if (userInput.toLowerCase().contains("deadline")) {
-            try {
-                if (!cleanedUserInput.contains("by")) {
-                    throw new MissingKeywordException();
-                }
-
-                taskDescription = cleanedUserInput.substring(cleanedUserInput.indexOf("deadline") + 8, cleanedUserInput.indexOf("by"));
-
-                if (taskDescription.length() == 0) {
-                    throw new MissingDescriptionException();
-                }
-                String deadlineBy = cleanedUserInput.substring(
-                        cleanedUserInput.toLowerCase().lastIndexOf("by") + 2);
-                if (deadlineBy.length() == 0) {
-                    throw new MissingInformationException();
-                }
-                newTask = new Deadline(taskDescription, false, deadlineBy);
-                taskList.addEntry(newTask);
-                System.out.println(SMALL_INDENT + "Got it! I added a new deadline: " + System.lineSeparator() + BIG_INDENT + newTask);
-            } catch (MissingKeywordException | MissingInformationException e) {
-                System.out.println(SMALL_INDENT + "Error! Did you forget to write by when?");
-            } catch (MissingDescriptionException e) {
-                System.out.println(SMALL_INDENT + "No description provided!");
-            } finally {
-                System.out.println(LINE_DIVIDER);
+            if (Parser.isMissingKeyInformation(userInput)) {
+                throw new MissingInformationException();
             }
+
+            if (inputTaskType == "todo") {
+                newTask = new Todo(inputTaskDescription, false);
+                taskList.addEntry(newTask);
+                ui.printAddTask(newTask);
+            } else if (inputTaskType == "event") {
+                String[] eventInfo = Parser.parseEventInfo(userInput);
+                newTask = new Event(inputTaskDescription, false, eventInfo[0], eventInfo[1]);
+                taskList.addEntry(newTask);
+                ui.printAddTask(newTask);
+            } else if (inputTaskType == "deadline") {
+                String deadlineBy = Parser.parseDeadlineInfo(userInput);
+                newTask = new Deadline(inputTaskDescription, false, deadlineBy);
+                taskList.addEntry(newTask);
+                ui.printAddTask(newTask);
+            }
+
+        } catch (MissingDescriptionException E) {
+            ui.printMissingDescriptionException();
+        } catch (MissingKeywordException | MissingInformationException e) {
+            ui.printMissingKeywordException(inputTaskType);
+        } finally {
+            ui.printSeparator();
         }
     }
 
-    private static void handleMarkingOutput(String userInput, TaskList taskList, String unmarkCommand, String markCommand) {
+    private static void handleMarkingOutput(String userInput, TaskList taskList, String unmarkCommand, String markCommand, Ui ui) {
         if (userInput.toLowerCase().contains(unmarkCommand)) {
-            unmarkTaskAndPrint(userInput, taskList, unmarkCommand);
+            unmarkTaskAndPrint(userInput, taskList, unmarkCommand, ui);
             // if "mark" command received
         } else {
-            markTaskAndPrint(userInput, taskList, markCommand);
+            markTaskAndPrint(userInput, taskList, markCommand, ui);
         }
     }
 
-    private static void handleListOutput(TaskList taskList) {
-        // if there are no lists or only empty lists
-        if (TaskList.getNumberOfTaskLists() < 1 || taskList.getNumberOfEntries() < 1) {
-            System.out.println(SMALL_INDENT + "no lists found");
-            System.out.println(LINE_DIVIDER);
-            // if there is a list to print
-        } else {
-            System.out.println(taskList);
-            System.out.println(LINE_DIVIDER);
-        }
-    }
 
-    private static void markTaskAndPrint(String userInput, TaskList taskList, String markCommand) {
+    private static void markTaskAndPrint(String userInput, TaskList taskList, String markCommand, Ui ui) {
         String markString = markCommand + " ";
         int markIndex = userInput.indexOf(markString);
         int taskNumPointer = (markIndex + markString.length());
         int taskNum = Character.getNumericValue(userInput.charAt(taskNumPointer));
         try {
             Task taskToMark = taskList.getTask(taskNum - 1);
-            if (taskToMark.isDone()) {
-                System.out.println(SMALL_INDENT + "Task " + taskNum + " is already marked as completed");
-                System.out.println(BIG_INDENT + taskToMark);
-                System.out.println(LINE_DIVIDER);
-            } else {
-                taskToMark.setIsDone(true);
-                System.out.println(SMALL_INDENT + "Good Job! I marked task " + taskNum + " as completed");
-                System.out.println(BIG_INDENT + taskToMark);
-                System.out.println(LINE_DIVIDER);
+            try {
+                if (taskToMark.isDone()) {
+                    throw new TaskMarkingException();
+                } else {
+                    taskToMark.setIsDone(true);
+                    ui.printMarkTask("mark", taskNum, taskToMark);
+                }
+            } catch (TaskMarkingException E) {
+                ui.printTaskMarkingException("mark", taskNum, taskToMark);
             }
         } catch (NullPointerException E) {
-            System.out.println(SMALL_INDENT + "Task not found");
-            System.out.println(LINE_DIVIDER);
+            ui.printNullPointerException();
         }
     }
 
-    private static void unmarkTaskAndPrint(String userInput, TaskList taskList, String unmarkCommand) {
+    private static void unmarkTaskAndPrint(String userInput, TaskList taskList, String unmarkCommand, Ui ui) {
         String unmarkString = (unmarkCommand + " ");
         int unmarkIndex = userInput.indexOf(unmarkString);
         int taskNumPointer = (unmarkIndex + unmarkString.length());
@@ -240,17 +164,12 @@ public class Ebot {
                     throw new TaskMarkingException();
                 }
                 taskToUnmark.setIsDone(false);
-                System.out.println(SMALL_INDENT + "Got it! I marked task " + taskNum + " as not done");
-                System.out.println(BIG_INDENT + taskToUnmark);
-                System.out.println(LINE_DIVIDER);
+                ui.printMarkTask("unmark", taskNum, taskToUnmark);
             } catch (TaskMarkingException E) {
-                System.out.println(SMALL_INDENT + "Task " + taskNum + " is already marked as not done");
-                System.out.println(BIG_INDENT + taskToUnmark);
-                System.out.println(LINE_DIVIDER);
+                ui.printTaskMarkingException("unmark", taskNum, taskToUnmark);
             }
         } catch (NullPointerException E) {
-            System.out.println(SMALL_INDENT + "Task not found");
-            System.out.println(LINE_DIVIDER);
+            ui.printNullPointerException();
         }
     }
 }

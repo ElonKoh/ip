@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class TaskList {
     private String listName;
-    private ArrayList<Task> entries; 
+    private ArrayList<Task> entries;
     private static int numberOfTaskLists = 0;
 
     // Constructing empty list
