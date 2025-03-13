@@ -1,3 +1,7 @@
+/**
+ * An extension of Task object, a <code>Todo</code> object stores
+ * <code>TASK_TYPE</code> "E"
+ */
 public class Todo extends Task {
     private static final String TASK_TYPE = "T";
 
