@@ -1,5 +1,10 @@
 import java.io.IOException;
 
+/**
+ * The main chatbot class, runs the main logic with user inputs.
+ * An Ebot object saves changes to the to-do tasklist
+ * to an output file specified by <code>OUTPUT_FILE_NAME</code>
+ */
 public class Ebot {
     private static final String OUTPUT_FILE_NAME = "./data/ebot.txt";
     private Ui ui;
@@ -18,6 +23,11 @@ public class Ebot {
         storage.createFile();
     }
 
+    /**
+     * The main logic of the chatbot, runs a user chat loop until "bye" keyword
+     * is given by user, which ends the program.
+     * @throws IOException If unable to write to file for whatever reason
+     */
     public void run() throws IOException {
         ui.printWelcome();
         // User chat loop
