@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Ebot {
     private static final String OUTPUT_FILE_NAME = "./data/ebot.txt";
@@ -53,10 +54,25 @@ public class Ebot {
                 storage.writeToFile(tasks.toString());
 
                 // if user types anything else
+            } else if (userInput.toLowerCase().contains("find")) {
+                handleTaskSearch(tasks, userInput, ui);
+
             } else {
                 ui.echoUserInput(userInput);
             }
         }
+    }
+
+    private void handleTaskSearch(TaskList tasks, String userInput, Ui ui) {
+        String searchWord = userInput.toLowerCase().replace("find", "").replace(" ", "");
+        TaskList searchResults = new TaskList("TempSearchResult");
+        for (Task task : tasks.getTaskList()) {
+            if (task.getDescription().contains(searchWord)) {
+                searchResults.addEntry(task);
+            }
+        }
+        ui.printTaskSearch();
+        ui.handleListOutput(searchResults);
     }
 
     public static void main(String[] args) throws IOException {
