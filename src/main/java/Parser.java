@@ -30,7 +30,7 @@ public final class Parser {
         } else if (taskType == "deadline") {
             index = description.indexOf("by");
         } else {
-            index = description.length() - 1;
+            index = description.length();
         }
         description = description.substring(0, index);
         return description;

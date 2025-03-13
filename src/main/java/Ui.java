@@ -106,4 +106,8 @@ public class Ui {
         System.out.println(SMALL_INDENT + "Task not found");
         System.out.println(LINE_DIVIDER);
     }
+
+    public void printTaskSearch() {
+        System.out.println(SMALL_INDENT + "Here are the matching tasks that I found: ");
+    }
 }
