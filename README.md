@@ -13,11 +13,11 @@ Ebot echoes whatever is typed by the user, until the following commands are dete
 ### 3. Event
 [Function] This creates and adds an event task into your task list\
 [How to use] Include the description, start time, and end time after the command\
-[Example] Event lecture from 2pm to 10pm
+[Example] Event lecture /from 2pm /to 10pm
 ### 4. Deadline
 [Function] This creates and adds a deadline task into your task list\
 [How to use] Include the description and deadline after the command\
-[Example] Deadline CS2113 Homework by tomorrow
+[Example] Deadline CS2113 Homework /by tomorrow
 ### 5. Delete
 [Function] This removes a task from your task list\
 [How to use] Include the number index of the task after the command\
