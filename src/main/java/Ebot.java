@@ -1,3 +1,4 @@
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -27,9 +28,6 @@ public class Ebot {
      * @throws IOException If unable to write to file for whatever reason
      */
     public void run() throws IOException {
-        // create file and add a filewriter to storage
-        storage.createFile();
-
         ui.printWelcome();
         // User chat loop
         while (true) {
@@ -80,7 +78,18 @@ public class Ebot {
 
     public static void main(String[] args) throws IOException {
         Ebot ebot = new Ebot(OUTPUT_FILE_NAME);
+        ebot.readFile();
         ebot.run();
+    }
+
+    private void readFile() throws FileNotFoundException {
+        if (!storage.createFile()) {
+            ArrayList<ArrayList<String>> fileTasks = storage.readFile(OUTPUT_FILE_NAME);
+            for (ArrayList<String> taskDetails : fileTasks) {
+                String taskType = taskDetails.get(0);
+                handleTaskAddingFromFile(tasks, taskType, taskDetails);
+            }
+        }
     }
 
     private void handleTaskSearch(TaskList tasks, String userInput, Ui ui) {
@@ -109,20 +118,36 @@ public class Ebot {
         }
     }
 
+    private static void handleTaskAddingFromFile(TaskList taskList, String taskType, ArrayList<String> taskDetails) {
+        String inputTaskDescription = taskDetails.get(1);
+        Task newTask;
+        if (taskType.equals("T")) {
+            newTask = new Todo(inputTaskDescription, false);
+            taskList.addEntry(newTask);
+        } else if (taskType.equals("E")) {
+            newTask = new Event(inputTaskDescription, false, taskDetails.get(2), taskDetails.get(3));
+            taskList.addEntry(newTask);
+        } else if (taskType.equals("D")) {
+            String deadlineBy = taskDetails.get(2);
+            newTask = new Deadline(inputTaskDescription, false, deadlineBy);
+            taskList.addEntry(newTask);
+        }
+    }
+
     private static void handleTaskAdding(TaskList taskList, String userInput, Ui ui) {
         String inputTaskType = Parser.parseInputTaskType(userInput);
-        String inputTaskDescription = Parser.parseInputTaskDesc(userInput);
         Task newTask;
 
         try {
-            if (inputTaskDescription.length() == 0) {
-                throw new MissingDescriptionException();
-            }
             if (Parser.isMissingKeyword(userInput)) {
                 throw new MissingKeywordException();
             }
-            if (Parser.isMissingKeyInformation(userInput)) {
+            if (Parser.isMissingKeyInformation(userInput, ui)) {
                 throw new MissingInformationException();
+            }
+            String inputTaskDescription = Parser.parseInputTaskDesc(userInput);
+            if (inputTaskDescription.length() == 0 || inputTaskDescription.equals(" ")) {
+                throw new MissingDescriptionException();
             }
 
             if (inputTaskType == "todo") {
@@ -130,7 +155,7 @@ public class Ebot {
                 taskList.addEntry(newTask);
                 ui.printAddTask(newTask);
             } else if (inputTaskType == "event") {
-                String[] eventInfo = Parser.parseEventInfo(userInput);
+                String[] eventInfo = Parser.parseEventInfo(userInput, ui);
                 newTask = new Event(inputTaskDescription, false, eventInfo[0], eventInfo[1]);
                 taskList.addEntry(newTask);
                 ui.printAddTask(newTask);
@@ -179,6 +204,8 @@ public class Ebot {
             }
         } catch (NullPointerException E) {
             ui.printNullPointerException();
+        } catch (IndexOutOfBoundsException E) {
+            ui.printNullPointerException();
         }
     }
 
@@ -199,6 +226,8 @@ public class Ebot {
                 ui.printTaskMarkingException("unmark", taskNum, taskToUnmark);
             }
         } catch (NullPointerException E) {
+            ui.printNullPointerException();
+        } catch (IndexOutOfBoundsException E) {
             ui.printNullPointerException();
         }
     }

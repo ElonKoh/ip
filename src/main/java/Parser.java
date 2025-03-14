@@ -6,7 +6,6 @@ import java.util.Scanner;
  */
 public final class Parser {
     private static final Scanner SCANNER = new Scanner(System.in);
-
     public static String getUserInput() {
         return SCANNER.nextLine();
     }
@@ -38,14 +37,14 @@ public final class Parser {
      * @return String task description.
      */
     public static String parseInputTaskDesc(String userInput) {
-        String cleanedUserInput = userInput.toLowerCase().replace(" ", "").replace("/", "");
+        String cleanedUserInput = userInput.toLowerCase();
         String taskType = parseInputTaskType(userInput);
-        String description = description = cleanedUserInput.replace(("todo"), "").replace("deadline", "").replace("event", "");
+        String description = cleanedUserInput.replace(("todo"), "").replace("deadline", "").replace("event", "");
         int index;
         if (taskType == "event") {
-            index = description.indexOf("from");
+            index = description.indexOf("/from");
         } else if (taskType == "deadline") {
-            index = description.indexOf("by");
+            index = description.indexOf("/by");
         } else {
             index = description.length();
         }
@@ -60,15 +59,15 @@ public final class Parser {
      * @return Boolean missing keyword.
      */
     public static Boolean isMissingKeyword(String userInput) {
-        String cleanedUserInput = userInput.toLowerCase().replace(" ", "").replace("/", "");
+        String cleanedUserInput = userInput.toLowerCase();
         String taskType = parseInputTaskType(userInput);
         Boolean output = false;
-        if (taskType == "event") {
-            if (!cleanedUserInput.contains("to") || !cleanedUserInput.contains("from")) {
+        if (taskType.equals("event")) {
+            if (!cleanedUserInput.contains("/to") || !cleanedUserInput.contains("/from")) {
                 output = true;
             }
-        } else if (taskType == "deadline") {
-            if (!cleanedUserInput.contains("by")) {
+        } else if (taskType.equals("deadline")) {
+            if (!cleanedUserInput.contains("/by")) {
                 output = true;
             }
         }
@@ -82,13 +81,14 @@ public final class Parser {
      * @param userInput raw userinput.
      * @return a String array containing <code>{eventFrom, eventTo}</code> in that order.
      */
-    public static String[] parseEventInfo(String userInput) {
-        String cleanedUserInput = userInput.toLowerCase().replace(" ", "").replace("/", "");
-        String eventFrom = cleanedUserInput.substring(cleanedUserInput.lastIndexOf("from") + 4,
-                cleanedUserInput.lastIndexOf("to"));
+    public static String[] parseEventInfo(String userInput, Ui ui) {
+        String cleanedUserInput = userInput.toLowerCase();
+        String[] output;
+        String eventFrom = cleanedUserInput.substring(cleanedUserInput.lastIndexOf("/from ") + 6,
+                cleanedUserInput.lastIndexOf(" /to "));
         String eventTo = cleanedUserInput.substring(
-                cleanedUserInput.lastIndexOf("to") + 2);
-        String[] output = new String[] {eventFrom, eventTo};
+                cleanedUserInput.lastIndexOf("/to ") + 4);
+        output = new String[]{eventFrom, eventTo};
         return output;
 
     }
@@ -101,9 +101,9 @@ public final class Parser {
      * @return a String <code>deadlineBy</code>.
      */
     public static String parseDeadlineInfo(String userInput) {
-        String cleanedUserInput = userInput.toLowerCase().replace(" ", "").replace("/", "");
+        String cleanedUserInput = userInput.toLowerCase();
         String deadlineBy = cleanedUserInput.substring(
-                cleanedUserInput.toLowerCase().lastIndexOf("by") + 2);
+                cleanedUserInput.toLowerCase().lastIndexOf("/by ") + 4);
         return deadlineBy;
     }
 
@@ -113,17 +113,17 @@ public final class Parser {
      * @param userInput raw userinput.
      * @return Boolean missing information.
      */
-    public static Boolean isMissingKeyInformation(String userInput) {
+    public static Boolean isMissingKeyInformation(String userInput, Ui ui) {
         String cleanedUserInput = userInput.toLowerCase().replace(" ", "").replace("/", "");
         String taskType = parseInputTaskType(userInput);
         Boolean output = false;
-        if (taskType == "event") {
-            String eventFrom = parseEventInfo(userInput)[0];
-            String eventTo = parseEventInfo(userInput)[1];
+        if (taskType.equals("event")) {
+            String eventFrom = parseEventInfo(userInput, ui)[0];
+            String eventTo = parseEventInfo(userInput, ui)[1];
             if (eventFrom.length() == 0 || eventTo.length() == 0) {
                 output = true;
             }
-        } else if (taskType == "deadline") {
+        } else if (taskType.equals("deadline")) {
             String deadlineBy = parseDeadlineInfo(userInput);
             if (deadlineBy.length() == 0) {
                 output = true;
@@ -131,4 +131,5 @@ public final class Parser {
         }
         return output;
     }
+
 }

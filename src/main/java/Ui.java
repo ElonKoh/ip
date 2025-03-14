@@ -27,6 +27,7 @@ public class Ui {
 
     public void echoUserInput(String userInput) {
         System.out.println(SMALL_INDENT + userInput);
+        System.out.println(SMALL_INDENT + "Did you make a typo? I did not understand, try using an accepted command");
         System.out.println(LINE_DIVIDER);
     }
 
