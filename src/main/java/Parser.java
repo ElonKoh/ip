@@ -1,5 +1,9 @@
 import java.util.Scanner;
 
+/**
+ * Used to store and manage the <code>SCANNER</code> object for user inputs,
+ *
+ */
 public final class Parser {
     private static final Scanner SCANNER = new Scanner(System.in);
 
@@ -7,6 +11,13 @@ public final class Parser {
         return SCANNER.nextLine();
     }
 
+    /**
+     * Returns the task type based on the users input
+     * If the task type is unknown, "unknown" is returned.
+     *
+     * @param userInput raw userinput.
+     * @return String task type.
+     */
     public static String parseInputTaskType(String userInput) {
         String cleanedUserInput = userInput.toLowerCase().replace(" ", "").replace("/", "");
         if (cleanedUserInput.toLowerCase().contains("todo")) {
@@ -20,6 +31,12 @@ public final class Parser {
         }
     }
 
+    /**
+     * Returns the task description based on userInput
+     *
+     * @param userInput raw userinput.
+     * @return String task description.
+     */
     public static String parseInputTaskDesc(String userInput) {
         String cleanedUserInput = userInput.toLowerCase().replace(" ", "").replace("/", "");
         String taskType = parseInputTaskType(userInput);
@@ -30,12 +47,18 @@ public final class Parser {
         } else if (taskType == "deadline") {
             index = description.indexOf("by");
         } else {
-            index = description.length() - 1;
+            index = description.length();
         }
         description = description.substring(0, index);
         return description;
     }
 
+    /**
+     * A boolean checker for if a missing keyword is detected in the user input
+     *
+     * @param userInput raw userinput.
+     * @return Boolean missing keyword.
+     */
     public static Boolean isMissingKeyword(String userInput) {
         String cleanedUserInput = userInput.toLowerCase().replace(" ", "").replace("/", "");
         String taskType = parseInputTaskType(userInput);
@@ -52,6 +75,13 @@ public final class Parser {
         return output;
     }
 
+    /**
+     * Returns the event information <code>eventFrom</code> and <code>eventTo</code>
+     * based on user input
+     *
+     * @param userInput raw userinput.
+     * @return a String array containing <code>{eventFrom, eventTo}</code> in that order.
+     */
     public static String[] parseEventInfo(String userInput) {
         String cleanedUserInput = userInput.toLowerCase().replace(" ", "").replace("/", "");
         String eventFrom = cleanedUserInput.substring(cleanedUserInput.lastIndexOf("from") + 4,
@@ -63,6 +93,13 @@ public final class Parser {
 
     }
 
+    /**
+     * Returns the deadline information <code>deadlineBy</code>
+     * based on user input
+     *
+     * @param userInput raw userinput.
+     * @return a String <code>deadlineBy</code>.
+     */
     public static String parseDeadlineInfo(String userInput) {
         String cleanedUserInput = userInput.toLowerCase().replace(" ", "").replace("/", "");
         String deadlineBy = cleanedUserInput.substring(
@@ -70,6 +107,12 @@ public final class Parser {
         return deadlineBy;
     }
 
+    /**
+     * A boolean checker for if missing information is detected in the user input
+     *
+     * @param userInput raw userinput.
+     * @return Boolean missing information.
+     */
     public static Boolean isMissingKeyInformation(String userInput) {
         String cleanedUserInput = userInput.toLowerCase().replace(" ", "").replace("/", "");
         String taskType = parseInputTaskType(userInput);

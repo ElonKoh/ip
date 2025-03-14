@@ -1,5 +1,11 @@
 import java.io.IOException;
+import java.util.ArrayList;
 
+/**
+ * The main chatbot class, runs the main logic with user inputs.
+ * An Ebot object saves changes to the to-do tasklist
+ * to an output file specified by <code>OUTPUT_FILE_NAME</code>
+ */
 public class Ebot {
     private static final String OUTPUT_FILE_NAME = "./data/ebot.txt";
     private Ui ui;
@@ -18,6 +24,11 @@ public class Ebot {
         storage.createFile();
     }
 
+    /**
+     * The main logic of the chatbot, runs a user chat loop until "bye" keyword
+     * is given by user, which ends the program.
+     * @throws IOException If unable to write to file for whatever reason
+     */
     public void run() throws IOException {
         ui.printWelcome();
         // User chat loop
@@ -53,10 +64,25 @@ public class Ebot {
                 storage.writeToFile(tasks.toString());
 
                 // if user types anything else
+            } else if (userInput.toLowerCase().contains("find")) {
+                handleTaskSearch(tasks, userInput, ui);
+
             } else {
                 ui.echoUserInput(userInput);
             }
         }
+    }
+
+    private void handleTaskSearch(TaskList tasks, String userInput, Ui ui) {
+        String searchWord = userInput.toLowerCase().replace("find", "").replace(" ", "");
+        TaskList searchResults = new TaskList("TempSearchResult");
+        for (Task task : tasks.getTaskList()) {
+            if (task.getDescription().contains(searchWord)) {
+                searchResults.addEntry(task);
+            }
+        }
+        ui.printTaskSearch();
+        ui.handleListOutput(searchResults);
     }
 
     public static void main(String[] args) throws IOException {

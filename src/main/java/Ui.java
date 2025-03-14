@@ -1,3 +1,7 @@
+/**
+ * Used to manage all output print statements, stores all standard messages,
+ * indents and dividers
+ */
 public class Ui {
     private static final String LINE_DIVIDER = ("___________________________________________");
     private static final String BIG_INDENT = "\t\t";
@@ -31,6 +35,11 @@ public class Ui {
         System.out.println(taskList);
     }
 
+    /**
+     * Prints output for a tasklist when "list" command is detected
+     *
+     * @param taskList the tasklist to print
+     */
     public void handleListOutput(TaskList taskList) {
         // if there are no lists or only empty lists
         if (TaskList.getNumberOfTaskLists() < 1 || taskList.getNumberOfEntries() < 1) {
@@ -43,10 +52,18 @@ public class Ui {
         }
     }
 
+    /**
+     * Prints output for a NumberFormatException (missing index error)
+     *
+     */
     public void printNumberFormatException() {
         System.out.println(SMALL_INDENT + "Error! Did you forget to indicate which index to delete?");
     }
 
+    /**
+     * Prints output for a IndexOutOfBoundsException (non-existant task indexed)
+     *
+     */
     public void printIndexOutOfBoundsException() {
         System.out.println(SMALL_INDENT + "Task not found");
     }
@@ -55,6 +72,11 @@ public class Ui {
         System.out.println(LINE_DIVIDER);
     }
 
+    /**
+     * Prints output for when a new task is added
+     *
+     * @param newTask the task to be added.
+     */
     public void printAddTask(Task newTask) {
         String newTaskType = newTask.getTaskType();
         if (newTaskType == "T") {
@@ -66,10 +88,19 @@ public class Ui {
         }
     }
 
+    /**
+     * Prints output for a MissingDescriptionException
+     *
+     */
     public void printMissingDescriptionException() {
         System.out.println(SMALL_INDENT + "No description provided!");
     }
 
+    /**
+     * Prints output for a MissingKeywordException
+     *
+     * @param inputTaskType type of task.
+     */
     public void printMissingKeywordException(String inputTaskType) {
         if (inputTaskType == "event") {
             System.out.println(SMALL_INDENT + "Error! Did you forget to write From when To when?");
@@ -78,6 +109,13 @@ public class Ui {
         }
     }
 
+    /**
+     * Prints output for when a task is marked
+     *
+     * @param markType unmark or mark.
+     * @param taskNum the task's number.
+     * @param taskToMark the task to mark.
+     */
     public void printMarkTask(String markType, int taskNum, Task taskToMark) {
         if (markType == "unmark") {
             System.out.println(SMALL_INDENT + "Got it! I marked task " + taskNum + " as not done");
@@ -90,6 +128,13 @@ public class Ui {
         }
     }
 
+    /**
+     * Prints output for a TaskMarkingException
+     *
+     * @param markType unmark or mark.
+     * @param taskNum the task's number.
+     * @param taskToMark the task to mark.
+     */
     public void printTaskMarkingException(String markType, int taskNum, Task taskToMark) {
         if (markType == "unmark") {
             System.out.println(SMALL_INDENT + "Task " + taskNum + " is already marked as not done");
@@ -102,8 +147,16 @@ public class Ui {
         }
     }
 
+    /**
+     * Prints output for a NullPointerException (empty tasklist)
+     *
+     */
     public void printNullPointerException() {
-        System.out.println(SMALL_INDENT + "Task not found");
+        System.out.println(BIG_INDENT + "Task not found");
         System.out.println(LINE_DIVIDER);
+    }
+
+    public void printTaskSearch() {
+        System.out.println(SMALL_INDENT + "Here are the matching tasks that I found: ");
     }
 }

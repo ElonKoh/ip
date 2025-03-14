@@ -1,3 +1,7 @@
+/**
+ * An extension of Task object, a <code>Deadline</code> object stores
+ * a String deadline <code>by</code> and <code>TASK_TYPE</code> "D"
+ */
 public class Deadline extends Task {
     protected String by;
     private static final String TASK_TYPE = "D";

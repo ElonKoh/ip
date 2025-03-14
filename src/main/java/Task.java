@@ -1,3 +1,7 @@
+/**
+ * Represents an abstract parent Task object for all types tasks
+ * holds description, isDone and an empty taskType String.
+ */
 public abstract class Task {
     private String description;
     private boolean isDone;

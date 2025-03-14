@@ -2,6 +2,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * Used to store and manage the <code>FileWriter</code> object and the outputs for storage
+ *
+ */
 public class Storage {
     private File ebotOutput;
     private FileWriter filewriter;

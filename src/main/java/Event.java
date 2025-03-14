@@ -1,3 +1,7 @@
+/**
+ * An extension of Task object, a <code>Event</code> object stores
+ * a String <code>start</code> and <code>end</code> and <code>TASK_TYPE</code> "E"
+ */
 public class Event extends Task {
     protected String start;
     protected String end;

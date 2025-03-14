@@ -1,5 +1,7 @@
 import java.util.ArrayList;
-
+/**
+ * A TaskList stores an ArrayList of tasks
+ */
 public class TaskList {
     private String listName;
     private ArrayList<Task> entries;
@@ -27,18 +29,34 @@ public class TaskList {
         numberOfTaskLists += 1;
     }
 
+    /**
+     * Adds an entry to the TaskList
+     *
+     * @param entry Task to be added.
+     */
     public void addEntry(Task entry) {
         entries.add(entry);
     }
 
+    /**
+     * Removes an entry to the TaskList
+     *
+     * @param deleteIndex Index of task to be removed.
+     */
     public void deleteEntry(int deleteIndex) {
         entries.remove(deleteIndex);
     }
+
 
     public ArrayList<Task> getTaskList() {
         return entries;
     }
 
+    /**
+     * Returns a task from the TaskList
+     *
+     * @param index Index of task to be returned.
+     */
     public Task getTask(int index) {
         return entries.get(index);
     }
