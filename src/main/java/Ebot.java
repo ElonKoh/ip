@@ -29,7 +29,6 @@ public class Ebot {
     public void run() throws IOException {
         // create file and add a filewriter to storage
         storage.createFile();
-        storage.addFileWriter(OUTPUT_FILE_NAME);
 
         ui.printWelcome();
         // User chat loop
@@ -38,7 +37,6 @@ public class Ebot {
             // if user types "bye" command
             if (userInput.equalsIgnoreCase("bye")) {
                 ui.printExit();
-                storage.closeFileWriter();
                 break;
 
                 // if user types "list" command
@@ -50,19 +48,25 @@ public class Ebot {
                 String unmarkCommand = "unmark";
                 String markCommand = "mark";
                 handleMarkingOutput(userInput, tasks, unmarkCommand, markCommand, ui);
+                storage.addFileWriter(OUTPUT_FILE_NAME);
                 storage.writeToFile(tasks.toString());
+                storage.closeFileWriter();
 
                 // if user types any of the task types keyword command
             } else if (userInput.toLowerCase().contains("todo")
                     || userInput.toLowerCase().contains("event")
                     || userInput.toLowerCase().contains("deadline")) {
                 handleTaskAdding(tasks, userInput, ui);
+                storage.addFileWriter(OUTPUT_FILE_NAME);
                 storage.writeToFile(tasks.toString());
+                storage.closeFileWriter();
 
                 // if user types "delete" command
             } else if (userInput.toLowerCase().contains("delete")) {
                 handleTaskDeletion(tasks, userInput, ui);
+                storage.addFileWriter(OUTPUT_FILE_NAME);
                 storage.writeToFile(tasks.toString());
+                storage.closeFileWriter();
 
                 // if user types anything else
             } else if (userInput.toLowerCase().contains("find")) {
