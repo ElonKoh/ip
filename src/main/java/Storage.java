@@ -12,12 +12,15 @@ public class Storage {
 
     public Storage(String outputFilename) throws IOException {
         this.ebotOutput = new File(outputFilename);
+    }
+
+    public void addFileWriter(String outputFilename) throws IOException {
         this.filewriter = new FileWriter(outputFilename);
     }
 
     public void createFile() {
         try {
-            if ((ebotOutput.getParentFile().mkdir()) && (ebotOutput.createNewFile())) {
+            if ((ebotOutput.getParentFile().mkdirs()) && (ebotOutput.createNewFile())) {
                 System.out.println("Output file created: " + ebotOutput.getName());
             } else {
                 System.out.println("Output file already exists.");

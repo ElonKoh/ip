@@ -20,9 +20,6 @@ public class Ebot {
         storage = new Storage(filepath);
     }
 
-    public void createFile() {
-        storage.createFile();
-    }
 
     /**
      * The main logic of the chatbot, runs a user chat loop until "bye" keyword
@@ -30,6 +27,10 @@ public class Ebot {
      * @throws IOException If unable to write to file for whatever reason
      */
     public void run() throws IOException {
+        // create file and add a filewriter to storage
+        storage.createFile();
+        storage.addFileWriter(OUTPUT_FILE_NAME);
+
         ui.printWelcome();
         // User chat loop
         while (true) {
@@ -73,6 +74,11 @@ public class Ebot {
         }
     }
 
+    public static void main(String[] args) throws IOException {
+        Ebot ebot = new Ebot(OUTPUT_FILE_NAME);
+        ebot.run();
+    }
+
     private void handleTaskSearch(TaskList tasks, String userInput, Ui ui) {
         String searchWord = userInput.toLowerCase().replace("find", "").replace(" ", "");
         TaskList searchResults = new TaskList("TempSearchResult");
@@ -83,12 +89,6 @@ public class Ebot {
         }
         ui.printTaskSearch();
         ui.handleListOutput(searchResults);
-    }
-
-    public static void main(String[] args) throws IOException {
-        Ebot ebot = new Ebot(OUTPUT_FILE_NAME);
-        ebot.createFile();
-        ebot.run();
     }
 
     private static void handleTaskDeletion(TaskList taskList, String userInput, Ui ui) {
